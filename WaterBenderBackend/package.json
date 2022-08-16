@@ -1,0 +1,15 @@
+{
+  "name": "package",
+  "version": "1.0.0",
+  "description": "Eine API für das Berechnen der Gesamtkosten von Mitbewohnern einer WG bei gemeinsamen Einkäufen",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "src/index.js"
+  },
+  "author": "Colin van Eimeren, Collin Seibt, Konstantin Kowalski",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.1"
+  }
+}
