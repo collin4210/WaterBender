@@ -15,9 +15,24 @@ int DIO = 17;
 int sensorPin = 26;
 int sensorValue = 0;
 #define relayPin 14
-TM1637 tm(CLK,DIO);
+TM1637 tm(CLK, DIO);
 int minValue = 2500;
- BLECharacteristic* MoistureCharacteristic;
+bool deviceConnected = false;
+BLECharacteristic* MoistureCharacteristic;
+BLECharacteristic* MinMoistureCharacteristic;
+
+class MyServerCallbacks: public BLEServerCallbacks {
+    void onConnect(BLEServer* pServer) {
+      deviceConnected = true;
+    };
+
+    void onDisconnect(BLEServer* pServer) {
+      deviceConnected = false;
+    }
+};
+
+
+
 
 void setup() {
   Serial.begin(115200);
@@ -32,13 +47,21 @@ void setup() {
 
   BLEDevice::init("MoistureSensorLucas");
   BLEServer *pServer = BLEDevice::createServer();
+  pServer->setCallbacks(new MyServerCallbacks());
+
   BLEService *pService = pServer->createService(SERVICE_UUID);
   MoistureCharacteristic = pService->createCharacteristic(
-                                         CHARACTERISTIC_UUID_MINMOISTURE,
-                                         BLECharacteristic::PROPERTY_READ 
-                                       );
+                             CHARACTERISTIC_UUID_MOISTURE,
+                             BLECharacteristic::PROPERTY_READ
+                           );
 
-  //pCharacteristic->setValue("Hello World says Neil");
+  MinMoistureCharacteristic = pService->createCharacteristic(
+                                CHARACTERISTIC_UUID_MINMOISTURE,
+                                BLECharacteristic::PROPERTY_READ |
+                                BLECharacteristic::PROPERTY_WRITE
+                              );
+
+
   pService->start();
   // BLEAdvertising *pAdvertising = pServer->getAdvertising();  // this still is working for backward compatibility
   BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
@@ -51,19 +74,25 @@ void setup() {
 }
 
 void loop() {
-     digitalWrite(relayPin, LOW);
-     int txValue = analogRead(26);
-     MoistureCharacteristic->setValue(std::to_string(txValue));
-    
-     
-  tm.display(3,txValue % 10);
-  tm.display(2,txValue /10 % 10 );
-  
-  tm.display(1,txValue /100 % 10);
-  tm.display(0,txValue /1000 % 10);
+  digitalWrite(relayPin, LOW);
+  int txValue = analogRead(26);
+
+
+  if (deviceConnected) {
+    minValue = MinMoistureCharacteristic->getValue();
+    MoistureCharacteristic->setValue(std::to_string(txValue));
+   
+
+  }
+  tm.display(3, txValue % 10);
+  tm.display(2, txValue / 10 % 10 );
+  tm.display(1, txValue / 100 % 10);
+  tm.display(0, txValue / 1000 % 10);
+
+
 
   if (txValue < minValue) {
-  digitalWrite(relayPin, HIGH);
+    digitalWrite(relayPin, HIGH);
 
   }
 
