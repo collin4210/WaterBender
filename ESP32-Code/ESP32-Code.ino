@@ -14,9 +14,11 @@ int  CLK = 16;
 int DIO = 17;
 int sensorPin = 26;
 int sensorValue = 0;
-#define relayPin 14
+int relayPin = 14;
+char arr[4];
 TM1637 tm(CLK, DIO);
 int minValue = 2500;
+std::string input;
 bool deviceConnected = false;
 BLECharacteristic* MoistureCharacteristic;
 BLECharacteristic* MinMoistureCharacteristic;
@@ -60,6 +62,7 @@ void setup() {
                                 BLECharacteristic::PROPERTY_READ |
                                 BLECharacteristic::PROPERTY_WRITE
                               );
+  MinMoistureCharacteristic->setValue(std::to_string(minValue));
 
 
   pService->start();
@@ -79,10 +82,10 @@ void loop() {
 
 
   if (deviceConnected) {
-    minValue = MinMoistureCharacteristic->getValue();
     MoistureCharacteristic->setValue(std::to_string(txValue));
-   
-
+    input = MinMoistureCharacteristic->getValue();
+     strcpy(arr,input.c_str());
+     minValue = std::stoi(arr);
   }
   tm.display(3, txValue % 10);
   tm.display(2, txValue / 10 % 10 );
