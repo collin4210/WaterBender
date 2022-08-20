@@ -63,7 +63,7 @@ void setup() {
                                 BLECharacteristic::PROPERTY_WRITE
 
                               );
-  MinMoistureCharacteristic->setValue(minValue);
+  MinMoistureCharacteristic->setValue(std::string(minValue));
 
 
   pService->start();
