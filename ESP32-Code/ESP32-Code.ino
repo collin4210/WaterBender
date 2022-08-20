@@ -61,8 +61,9 @@ void setup() {
                                 CHARACTERISTIC_UUID_MINMOISTURE,
                                 BLECharacteristic::PROPERTY_READ |
                                 BLECharacteristic::PROPERTY_WRITE
+
                               );
-  MinMoistureCharacteristic->setValue(std::to_string(minValue));
+  MinMoistureCharacteristic->setValue(minValue);
 
 
   pService->start();
@@ -78,15 +79,16 @@ void setup() {
 
 void loop() {
   digitalWrite(relayPin, LOW);
-  int txValue = analogRead(26);
+  int txValue = analogRead(sensorPin);
+
+  MoistureCharacteristic->setValue(txValue);
+  input = MinMoistureCharacteristic->getValue();
+  strcpy(arr, input.c_str());
 
 
-  if (deviceConnected) {
-    MoistureCharacteristic->setValue(std::to_string(txValue));
-    input = MinMoistureCharacteristic->getValue();
-     strcpy(arr,input.c_str());
-     minValue = std::stoi(arr);
-  }
+  minValue = atoi(arr);
+
+
   tm.display(3, txValue % 10);
   tm.display(2, txValue / 10 % 10 );
   tm.display(1, txValue / 100 % 10);
