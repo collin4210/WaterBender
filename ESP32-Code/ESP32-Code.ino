@@ -7,9 +7,9 @@
 // See the following for generating UUIDs:
 // https://www.uuidgenerator.net/
 
-#define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
-#define CHARACTERISTIC_UUID_MOISTURE "beb5483e-36e1-4688-b7f5-ea07361b26a8"
-#define CHARACTERISTIC_UUID_MINMOISTURE "4d1f510a-58a6-49d9-a740-12834459c84e"
+#define SERVICE_UUID "9ee426ae-b884-497d-92a9-248c6b02c079"
+#define CHARACTERISTIC_UUID_MOISTURE "e1d17504-e068-4386-ab40-9a94bff5a960"
+#define CHARACTERISTIC_UUID_MINMOISTURE "329eccd3-3cb6-4838-8ded-faa81ec07445"
 int  CLK = 16;
 int DIO = 17;
 int sensorPin = 26;
@@ -63,7 +63,7 @@ void setup() {
                                 BLECharacteristic::PROPERTY_WRITE
 
                               );
-  MinMoistureCharacteristic->setValue(std::string(minValue));
+  MinMoistureCharacteristic->setValue("2500");
 
 
   pService->start();
